@@ -61,7 +61,7 @@ def authAsPhone():
 
 def authAsPC():
     net = zkNet(e1.get(), e2.get())
-    r = net.webAuth('phone')
+    r = net.webAuth('pc')
     msgBox(r[0], r[0], r[1])
     # print("auth as pc")
 
