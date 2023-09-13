@@ -54,21 +54,21 @@ def msgBox(mtype, title, text):
 
 def authAsPhone():
     net = zkNet(e1.get(), e2.get())
-    r = net.webAuth('phone')
+    r = net.autoWebAuth('phone')
     msgBox(r[0], r[0], r[1])
     # print("authAsPhone")
 
 
 def authAsPC():
     net = zkNet(e1.get(), e2.get())
-    r = net.webAuth('pc')
+    r = net.autoWebAuth('pc')
     msgBox(r[0], r[0], r[1])
     # print("auth as pc")
 
 
 def authIP():
     net = zkNet(e1.get(), e2.get())
-    r = net.quickAuthShare(e3.get())
+    r = net.autoQuickAuthShare(e3.get())
     msgBox(r[0], r[0], r[1])
 
     # print("auth ip")
@@ -77,7 +77,7 @@ def authIP():
 def showMore():
     text = "我目前专注于将技术转化为实际收益，若有对计算机领域拥有兴趣与相关技能（如电子、网络、软件等），并且怀揣创新思路的同学，我诚挚地邀请您一同研究交流学习做大做强。如果我的微信号无法联系，请您查阅GitHub发布主页以获取最新信息。任何问题或建议，也都欢迎在GitHub上提出issues，期待与您的交流与合作。"
     github = "Github页面：https://github.com/LingMessy/zkNet"
-    msgBox('info', "更多", text+'\n'+github)
+    msgBox('info', "加入我们", text + '\n' + github)
 
 
 ttk.Button(root, text='认证本机为手机', width=10,
@@ -115,7 +115,7 @@ ttk.Separator(root, orient=tk.HORIZONTAL).grid(row=8,
                                                sticky=tk.W + tk.E,
                                                columnspan=2)
 
-ttk.Button(root, text='更多信息', width=10, command=showMore).grid(row=9,
+ttk.Button(root, text='加入我们', width=10, command=showMore).grid(row=9,
                                                                column=1,
                                                                columnspan=1,
                                                                sticky=tk.E,
