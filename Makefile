@@ -1,14 +1,22 @@
 PWD :=$(shell pwd)
 PYTHON=python
 PIP=pip
-REQU= requests pyinstaller
+REQU= requests pyinstaller customtkinter
 
 .PHONY: zkNet.exe
 zkNet.exe:
-	pyinstaller -F -w gui.py -n zkNet.exe
+	pyinstaller -F -w gui.py -n zkNet-oldGui.exe
+	pyinstaller -F -w newGui.py -n zkNet.exe
 
+.PHONY: run
 run:
+	$(PYTHON) newGui.py
+
+
+.PHONY: runOldGui
+runOldGui:
 	$(PYTHON) gui.py
+
 
 .PHONY: getDevEnv
 getDevEnv: 

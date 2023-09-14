@@ -2,18 +2,24 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox
 import ctypes
+import platform
 from zkNet import zkNet
 
 root = tk.Tk()
 
-# 调用api设置成由应用程序缩放
-ctypes.windll.shcore.SetProcessDpiAwareness(1)
+if platform.system().lower() == 'windows':
+    # windows平台根据系统设置进行缩放适应高dpi
 
-# 调用api获得当前的缩放因子
-ScaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0)
+    # 调用api设置成由应用程序缩放
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    # 调用api获得当前的缩放因子
+    ScaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0)
+    # 设置缩放因子
+    root.tk.call('tk', 'scaling', ScaleFactor / 75)
 
-# 设置缩放因子
-root.tk.call('tk', 'scaling', ScaleFactor / 75)
+elif platform.system().lower == 'linux':
+    pass
+
 root.update()
 
 root.geometry("400x300")
