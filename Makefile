@@ -1,33 +1,32 @@
 PWD :=$(shell pwd)
 PYTHON=python
-PIP=pip
 REQU= requests pyinstaller customtkinter
 
 .PHONY: zkNet.exe
-zkNet.exe:
-	pyinstaller -F -w gui.py -n zkNet-oldGui.exe
-	pyinstaller -F -w newGui.py -n zkNet.exe
+zkNet.exe: venv
+	source venv/bin/activate && \
+	python make.py
+
 
 .PHONY: run
-run:
-	$(PYTHON) newGui.py
+run: venv
+	source venv/bin/activate && \
+	python newGui.py
 
 
 .PHONY: runOldGui
-runOldGui:
-	$(PYTHON) gui.py
+runOldGui: venv
+	source venv/bin/activate && \
+	python gui.py
 
 
-.PHONY: getDevEnv
-getDevEnv: 
-	$(PIP) install $(REQU)
-
-
-.PHONY: getDevEnv
-cleanDevEnv: 
-	$(PIP) remove $(REQU)
+venv:
+	mkdir venv	&& \
+	$(PYTHON) -m venv venv/ && \
+	source venv/bin/activate && \
+	pip install $(REQU)
 
 
 .PHONY: clean
 clean: 
-	rm -rf ./build ./dist zkNet.exe.spec __pycache__
+	rm -rf ./build ./dist *.spec __pycache__ ./venv
