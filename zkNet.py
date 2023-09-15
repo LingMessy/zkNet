@@ -73,21 +73,21 @@ class zkNet:
                 r'/webauth.do?wlanacip=192.16.100.1&wlanacname=zax_hzstu&wlanuserip=10.51.68.157&mac=80:05:88:71:a9:85&vlan=0&url=http://1.1.1.1',
                 data=postData)
         except requests.exceptions.RequestException as e:
-            return ('error', '请求错误，请检查网络状态：' + str(e))
+            return ('err', '请求错误，请检查网络状态：' + str(e))
 
         rs = re.search(
             r'<input\sid="distoken"\sname="distoken"\stype="hidden"\svalue="([a-zA-Z0-9]+)"\s\/>',
             r.text)
 
-        if rs is None:
-            return ('error', '获取distoken失败，可能软件出现bug，请提issuses反馈')
-
-        self.distoken = rs.group(1)
-        # print(self.distoken)
-
         if "重复认证" in r.text:
+            if rs is None:
+                return ('err', '获取distoken失败，可能软件出现bug，请提issuses反馈')
+            self.distoken = rs.group(1)
             return ('warn', '检测到重复认证')
         elif '<div class="login_out">' in r.text:
+            if rs is None:
+                return ('err', '获取distoken失败，可能软件出现bug，请提issuses反馈')
+            self.distoken = rs.group(1)
             return ('info', '认证成功')
         else:
             return ('err', '认证可能失败：请检查账号密码')
@@ -111,7 +111,16 @@ class zkNet:
         else:
             return r
 
+    def isValidIp(ip: str) -> bool:
+        pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
+        if re.match(pattern=pattern, string=ip) is not None:
+            return True
+        else:
+            return False
+
     def quickAuthShare(self, ip: str) -> (str, str):
+        if not zkNet.isValidIp(ip):
+            return ('err', '输入的IP地址不合法')
 
         session = requests.session()
         # session.headers.update(headers)
@@ -191,14 +200,14 @@ class zkNet:
                 headers=headers,
                 data=postData)
         except requests.exceptions.RequestException as e:
-            return ('error', '请求错误，请检查网络状态：' + str(e))
+            return ('err', '请求错误，请检查网络状态：' + str(e))
 
         if "下线成功" in r.text:
             return True
         elif "非法下线请求被拒绝" in r.text:
-            return ('error', '非法下线请求被拒绝，可能软件出现bug，请提issuses反馈')
+            return ('err', '非法下线请求被拒绝，可能软件出现bug，请提issuses反馈')
         else:
-            return ('error', 'offLine未知错误，可能软件出现bug，请提issuses反馈')
+            return ('err', 'offLine未知错误，可能软件出现bug，请提issuses反馈')
 
     def quickAuthOffLine(self, ip: str):
         session = requests.session()
@@ -218,7 +227,7 @@ class zkNet:
             message = data["message"]
 
         except requests.exceptions.RequestException as e:
-            return ('error', '请求错误，请检查网络状态：' + str(e))
+            return ('err', '请求错误，请检查网络状态：' + str(e))
         except Exception as e:
             return ('err', 'json 解析错误：' + str(e))
 
@@ -227,9 +236,9 @@ class zkNet:
         if "下线成功" in message:
             return True
         elif "下线失败" in message:
-            return ('error', '非法下线请求被拒绝，可能软件出现bug，请提issuses反馈')
+            return ('err', '非法下线请求被拒绝，可能软件出现bug，请提issuses反馈')
         else:
-            return ('error', 'quickAuthOffLine未知错误，可能软件出现bug，请提issuses反馈')
+            return ('err', 'quickAuthOffLine未知错误，可能软件出现bug，请提issuses反馈')
 
 
 if __name__ == '__main__':

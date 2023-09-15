@@ -56,6 +56,8 @@ def msgBox(mtype, title, text):
         tk.messagebox.showwarning(title, text)
     elif mtype == 'err':
         tk.messagebox.showerror(title, text)
+    else:
+        tk.messagebox.showerror(title, "无法确定消息类型，软件出现bug，请提issuses反馈")
 
 
 def authAsPhone():
