@@ -4,6 +4,8 @@ import tkinter.messagebox
 import ctypes
 import platform
 from zkNet import zkNet
+import tools
+from make import version
 
 root = tk.Tk()
 
@@ -24,29 +26,40 @@ root.update()
 
 root.geometry("400x300")
 
-root.title('zkNet')
+root.title('zkNet-v%s' % version)
 
 root.columnconfigure(0, weight=1)
-root.columnconfigure(1, weight=2)
+root.columnconfigure(1, weight=1)
+root.columnconfigure(2, weight=1)
 # root.rowconfigure(0, weight=1)
 
 ttk.Label(root, text='账号 : ').grid(row=0, column=0)
 
 ttk.Label(root, text='密码 : ').grid(row=1, column=0)
 
-e1 = ttk.Entry(root)
+usernameEntry = ttk.Entry(root)
 
-e2 = ttk.Entry(root, show='*')
+passwdEntry = ttk.Entry(root, show='*')
 
-e1.grid(row=0, column=1, padx=10, pady=5, sticky=tk.W + tk.E)
+usernameEntry.grid(row=0,
+                   column=1,
+                   padx=10,
+                   pady=5,
+                   sticky=tk.W + tk.E,
+                   columnspan=2)
 
-e2.grid(row=1, column=1, padx=10, pady=5, sticky=tk.W + tk.E)
+passwdEntry.grid(row=1,
+                 column=1,
+                 padx=10,
+                 pady=5,
+                 sticky=tk.W + tk.E,
+                 columnspan=2)
 
 # 分割线
 ttk.Separator(root, orient=tk.HORIZONTAL).grid(row=3,
                                                column=0,
                                                sticky=tk.W + tk.E,
-                                               columnspan=2)
+                                               columnspan=3)
 
 
 def msgBox(mtype, title, text):
@@ -61,22 +74,22 @@ def msgBox(mtype, title, text):
 
 
 def authAsPhone():
-    net = zkNet(e1.get(), e2.get())
+    net = zkNet(usernameEntry.get(), passwdEntry.get())
     r = net.autoWebAuth('phone')
     msgBox(r[0], r[0], r[1])
     # print("authAsPhone")
 
 
 def authAsPC():
-    net = zkNet(e1.get(), e2.get())
+    net = zkNet(usernameEntry.get(), passwdEntry.get())
     r = net.autoWebAuth('pc')
     msgBox(r[0], r[0], r[1])
     # print("auth as pc")
 
 
 def authIP():
-    net = zkNet(e1.get(), e2.get())
-    r = net.autoQuickAuthShare(e3.get())
+    net = zkNet(usernameEntry.get(), passwdEntry.get())
+    r = net.autoQuickAuthShare(ipEntry.get())
     msgBox(r[0], r[0], r[1])
 
     # print("auth ip")
@@ -91,7 +104,7 @@ def showMore():
 ttk.Button(root, text='认证本机为手机', width=10,
            command=authAsPhone).grid(row=4,
                                      column=0,
-                                     columnspan=2,
+                                     columnspan=3,
                                      sticky=tk.W + tk.E,
                                      padx=10,
                                      pady=5)
@@ -99,7 +112,7 @@ ttk.Button(root, text='认证本机为手机', width=10,
 ttk.Button(root, text='认证本机为电脑', width=10,
            command=authAsPC).grid(row=5,
                                   column=0,
-                                  columnspan=2,
+                                  columnspan=3,
                                   sticky=tk.W + tk.E,
                                   padx=10,
                                   pady=5)
@@ -107,27 +120,112 @@ ttk.Button(root, text='认证本机为电脑', width=10,
 ttk.Button(root, text='认证以下IP为电脑', width=10,
            command=authIP).grid(row=6,
                                 column=0,
-                                columnspan=2,
+                                columnspan=3,
                                 sticky=tk.W + tk.E,
                                 padx=10,
                                 pady=5)
 
 ttk.Label(root, text='指定 IP : ').grid(row=7, column=0)
 
-e3 = ttk.Entry(root)
+ipEntry = ttk.Entry(root)
 
-e3.grid(row=7, column=1, padx=10, pady=5, sticky=tk.W + tk.E)
+ipEntry.grid(row=7,
+             column=1,
+             padx=10,
+             pady=5,
+             sticky=tk.W + tk.E,
+             columnspan=2)
 
 ttk.Separator(root, orient=tk.HORIZONTAL).grid(row=8,
                                                column=0,
                                                sticky=tk.W + tk.E,
-                                               columnspan=2)
+                                               columnspan=3)
+
+cacheTool = tools.cache()
+startupTool = tools.startup4Win()
+
+cacheInfoVar = tk.BooleanVar()
+cacheInfoVar.set(cacheTool.checkCache())
+
+startupVar = tk.BooleanVar()
+startupVar.set(startupTool.checkStartup())
+
+if cacheInfoVar.get():
+    infoDict = cacheTool.readCache()
+    if infoDict is not None:
+        usernameEntry.delete(0, tk.END)
+        passwdEntry.delete(0, tk.END)
+        ipEntry.delete(0, tk.END)
+
+        usernameEntry.insert(0, infoDict['username'])
+        passwdEntry.insert(0, infoDict['passwd'])
+        ipEntry.insert(0, infoDict['ip'])
+
+
+def cacheInfoClick():
+    if cacheInfoVar.get():
+        infoDict = {
+            'username': usernameEntry.get(),
+            'passwd': passwdEntry.get(),
+            'ip': ipEntry.get(),
+        }
+
+        cacheTool.cacheInfo(infoDict=infoDict)
+    else:
+        cacheTool.removeCache()
+
+
+def startupClick():
+    msgBox(
+        'warn', '提示:',
+        '为了实现该功能，程序会在启动目录里添加脚本，该操作可能会被杀软误报，导致程序被杀软删除。经测试，如果频繁切换该功能会被自带的defender识别为木马导致程序被删除。'
+    )
+    startupTool.updateStartup(startupVar.get())
+
+
+ttk.Checkbutton(root,
+                text='记住信息',
+                variable=cacheInfoVar,
+                command=cacheInfoClick).grid(row=9,
+                                             column=0,
+                                             columnspan=1,
+                                             sticky=tk.W + tk.E,
+                                             padx=10,
+                                             pady=5)
+
+ttk.Checkbutton(root,
+                text='开机自启(仅限exe)',
+                variable=startupVar,
+                command=startupClick).grid(row=9,
+                                           column=1,
+                                           columnspan=1,
+                                           sticky=tk.W + tk.E,
+                                           padx=10,
+                                           pady=5)
 
 ttk.Button(root, text='加入我们', width=10, command=showMore).grid(row=9,
-                                                               column=1,
+                                                               column=2,
                                                                columnspan=1,
                                                                sticky=tk.E,
                                                                padx=10,
                                                                pady=5)
+
+
+def closeWindow():
+    if cacheInfoVar.get():
+        infoDict = {
+            'username': usernameEntry.get(),
+            'passwd': passwdEntry.get(),
+            'ip': ipEntry.get(),
+        }
+
+        cacheTool.cacheInfo(infoDict=infoDict)
+
+    startupTool.updateStartup(startupVar.get())
+
+    root.destroy()
+
+
+root.protocol('WM_DELETE_WINDOW', closeWindow)
 
 tk.mainloop()
