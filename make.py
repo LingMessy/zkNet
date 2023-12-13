@@ -14,15 +14,11 @@ if __name__ == "__main__":
         winX86Machine = []
 
         if arch == "64bit" and machine in winX64Machine:
-            os.system(
-                "pyinstaller -F -w gui.py -n zkNet-v%s-oldGui-x64-win.exe" % version
-            )
-            os.system("pyinstaller -F -w newGui.py -n zkNet-v%s-x64-win.exe" % version)
+            os.system("pyinstaller -F -w gui.py -n zkNet-v%s-x64-win.exe" % version)
+
         elif arch == "32bit" and machine in winX86Machine:
-            os.system(
-                "pyinstaller -F -w gui.py -n zkNet-v%s-oldGui-x86-win.exe" % version
-            )
-            os.system("pyinstaller -F -w newGui.py -n zkNet-v%s-x86-win.exe" % version)
+            os.system("pyinstaller -F -w gui.py -n zkNet-v%s-x86-win.exe" % version)
+
         else:
             print("该平台未被支持")
 
@@ -31,19 +27,11 @@ if __name__ == "__main__":
         linuxX64Machine = ["x86_64"]
         linuxX86Machine = []
         if arch == "64bit" and machine == "x86_64":
-            os.system(
-                "pyinstaller -F -w gui.py -n zkNet-v%s-oldGui-x64-linux.bin" % version
-            )
-            os.system(
-                "pyinstaller -F -w newGui.py -n zkNet-v%s-x64-linux.bin" % version
-            )
+            os.system("pyinstaller -F -w gui.py -n zkNet-v%s-x64-linux.bin" % version)
+
         elif arch == "32bit" and machine == "i386":
-            os.system(
-                "pyinstaller -F -w gui.py -n zkNet-v%s-oldGui-x86-linux.bin" % version
-            )
-            os.system(
-                "pyinstaller -F -w newGui.py -n zkNet-v%s-x86-linux.bin" % version
-            )
+            os.system("pyinstaller -F -w gui.py -n zkNet-v%s-x86-linux.bin" % version)
+
         else:
             print("该平台未被支持")
 

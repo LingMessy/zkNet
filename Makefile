@@ -1,6 +1,6 @@
 PWD :=$(shell pwd)
 PYTHON=python
-REQU= requests pyinstaller customtkinter
+REQU= requests pyinstaller
 
 .PHONY: zkNet.exe
 zkNet.exe: venv
@@ -10,12 +10,6 @@ zkNet.exe: venv
 
 .PHONY: run
 run: venv
-	source venv/bin/activate && \
-	python newGui.py
-
-
-.PHONY: runOldGui
-runOldGui: venv
 	source venv/bin/activate && \
 	python gui.py
 
